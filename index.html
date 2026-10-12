@@ -6,151 +6,169 @@
 <title>Stickman Video Factory</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#101827;color:#f5f7fb;
-font-family:Arial,sans-serif;padding:20px}
+body{margin:0;padding:18px;background:#101827;color:#f5f7fb;font-family:Arial,sans-serif}
 main{max-width:850px;margin:auto}
-h1{color:#70e1c1;text-align:center}
-p{line-height:1.8;color:#c8d3e5}
-.panel{background:#1d293b;padding:16px;border-radius:16px;
-margin:14px 0}
-canvas{display:block;width:100%;background:#fff;
-border-radius:12px}
-button{border:0;border-radius:10px;padding:13px 16px;
-margin:5px;font-weight:bold;cursor:pointer}
+h1{text-align:center;color:#70e1c1}
+.panel{background:#1d293b;padding:16px;border-radius:15px;margin:14px 0}
+p{line-height:1.8;color:#d3dceb}
+input,select{width:100%;padding:12px;border-radius:9px;border:0;margin-top:8px;font-size:16px}
+button{border:0;border-radius:9px;padding:12px;margin:5px 2px;font-weight:bold;font-size:15px;cursor:pointer}
 .primary{background:#70e1c1;color:#102030}
-.secondary{background:#dce7f5;color:#172235}
+.secondary{background:#e0e8f4;color:#172235}
+canvas{display:block;width:100%;height:auto;background:white;border-radius:10px;margin-top:12px}
 #status{color:#70e1c1}
 </style>
 </head>
 <body>
 <main>
-<h1>Stickman Video Factory</h1>
-<p style="text-align:center">مصنع المشاهد المضحكة — النسخة الأولى</p>
+<h1>🎬 Stickman Video Factory</h1>
+<p style="text-align:center">مصنع المشاهد المضحكة</p>
 
 <section class="panel">
-<label for="idea">فكرة المشهد</label>
-<p><input id="idea" value="الطالب الكسول والقدر"
-style="width:100%;padding:12px;border-radius:8px">
-</p>
-<button class="primary" id="make">إنشاء مشهد تلقائي</button>
-<button class="secondary" id="record">تسجيل الفيديو</button>
-<button class="secondary" id="stop" disabled>إيقاف وحفظ</button>
+<label for="idea">اكتب فكرة الفيديو</label>
+<input id="idea" value="طالب يهرب من الامتحان" placeholder="مثال: لاعب يضيع هدفًا سهلًا">
+
+<label for="kind">نوع المشهد</label>
+<select id="kind">
+<option value="auto">اختيار تلقائي حسب الفكرة</option>
+<option value="exam">موقف امتحان</option>
+<option value="football">موقف كرة قدم</option>
+<option value="chase">مطاردة مضحكة</option>
+<option value="fall">موقف مفاجئ</option>
+</select>
+
+<button class="primary" id="make">🎭 إنشاء مشهد جديد</button>
+<button class="secondary" id="record">⏺ تسجيل الفيديو</button>
+<button class="secondary" id="stop" disabled>⏹ إيقاف وحفظ</button>
+
 <canvas id="scene" width="720" height="405"></canvas>
-<p id="status">جاهز لإنشاء أول مشهد.</p>
+<p id="status">جاهز. اكتب فكرة واضغط إنشاء مشهد جديد.</p>
 </section>
-<p>هذه نسخة تجريبية تعمل داخل المتصفح، ولا تحتاج إلى مفتاح API.</p>
 </main>
 
 <script>
 const canvas=document.getElementById("scene");
 const ctx=canvas.getContext("2d");
-const status=document.getElementById("status");
 const idea=document.getElementById("idea");
-let startTime=performance.now();
-let running=true;
-let recorder=null, chunks=[];
+const kind=document.getElementById("kind");
+const status=document.getElementById("status");
+let scene="exam",start=performance.now();
+let recorder=null,chunks=[];
 
-function line(x1,y1,x2,y2,width=7){
- ctx.beginPath();
- ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
- ctx.lineWidth=width;ctx.lineCap="round";
- ctx.strokeStyle="#17202d";ctx.stroke();
+function line(x1,y1,x2,y2,width=7,color="#17202d"){
+ ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+ ctx.lineWidth=width;ctx.lineCap="round";ctx.strokeStyle=color;ctx.stroke();
 }
-function stickman(x,y,t,panic=false){
- const swing=Math.sin(t*0.012)*20;
- ctx.strokeStyle="#17202d";ctx.lineWidth=7;
- ctx.lineCap="round";
- // الرأس
- ctx.beginPath();ctx.arc(x,y-65,17,0,Math.PI*2);ctx.stroke();
- // الجسم
- line(x,y-48,x,y+4);
- // الذراعان
- line(x,y-35,x-22+swing,y-12);
- line(x,y-35,x+22-swing,y-15);
- // الساقان
- line(x,y+4,x-18+swing,y+38);
- line(x,y+4,x+18-swing,y+38);
- if(panic){
-  ctx.font="bold 28px Arial";ctx.fillStyle="#e74c3c";
-  ctx.fillText("!",x+22,y-82);
+function stickman(x,y,t,pose="normal"){
+ const swing=Math.sin(t*.008)*17;
+ ctx.strokeStyle="#17202d";ctx.lineWidth=7;ctx.lineCap="round";
+ ctx.beginPath();ctx.arc(x,y-66,16,0,Math.PI*2);ctx.stroke();
+ line(x,y-49,x,y+1);
+ if(pose==="panic"){
+  line(x,y-35,x-28,y-58);
+  line(x,y-35,x+27,y-55);
+  line(x,y+1,x-24,y+28);
+  line(x,y+1,x+24,y+28);
+ }else if(pose==="kick"){
+  line(x,y-35,x-25,y-15);
+  line(x,y-35,x+25,y-15);
+  line(x,y+1,x-18,y+35);
+  line(x,y+1,x+34,y+8);
+ }else{
+  line(x,y-35,x-23+swing,y-12);
+  line(x,y-35,x+23-swing,y-12);
+  line(x,y+1,x-19-swing*.3,y+35);
+  line(x,y+1,x+19+swing*.3,y+35);
  }
 }
-function draw(t){
- const w=canvas.width,h=canvas.height;
- ctx.clearRect(0,0,w,h);
- ctx.fillStyle="#eaf5ff";ctx.fillRect(0,0,w,h);
- // الشمس والسحب
- ctx.fillStyle="#ffd166";
- ctx.beginPath();ctx.arc(625,65,30,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#fff";
- [ [100,70],[280,95],[470,55] ].forEach(([x,y])=>{
-  ctx.beginPath();ctx.arc(x,y,17,0,Math.PI*2);
-  ctx.arc(x+20,y-8,23,0,Math.PI*2);
-  ctx.arc(x+42,y,16,0,Math.PI*2);ctx.fill();
- });
- // الأرض
- ctx.fillStyle="#8ed6a2";ctx.fillRect(0,310,w,95);
- ctx.fillStyle="#477f56";ctx.fillRect(0,310,w,7);
- const phase=(t%12000)/12000;
- const x=80+phase*550;
- const panic=phase>.65;
- stickman(x,270,t,panic);
- // الحقيبة أو القدر
- if(phase>.35){
-  const px=phase>.7?x-45:540;
-  ctx.fillStyle="#e7a23c";
-  ctx.fillRect(px-17,265,34,30);
-  ctx.strokeStyle="#8c5520";ctx.lineWidth=4;
-  ctx.strokeRect(px-17,265,34,30);
-  ctx.beginPath();ctx.arc(px,265,10,Math.PI,0);ctx.stroke();
- }
- // عنوان المشهد
- ctx.fillStyle="#17202d";
- ctx.textAlign="center";ctx.font="bold 25px Arial";
- ctx.fillText(idea.value||"موقف مضحك",360,35);
- if(phase>.7){
-  ctx.fillStyle="#e74c3c";ctx.font="bold 22px Arial";
-  ctx.fillText("أين حقيبتي؟!",360,365);
+function text(str,x,y,size=23,color="#17202d"){
+ ctx.fillStyle=color;ctx.font="bold "+size+"px Arial";
+ ctx.textAlign="center";ctx.fillText(str,x,y);
+}
+function draw(now){
+ const t=now-start,phase=(t%10000)/10000;
+ ctx.clearRect(0,0,720,405);
+ ctx.fillStyle="#eaf5ff";ctx.fillRect(0,0,720,405);
+ ctx.fillStyle="#ffd166";ctx.beginPath();ctx.arc(640,60,27,0,7);ctx.fill();
+ ctx.fillStyle="#8ed6a2";ctx.fillRect(0,310,720,95);
+ ctx.fillStyle="#477f56";ctx.fillRect(0,310,720,6);
+ text(idea.value||"موقف مضحك",360,34,24);
+
+ if(scene==="exam"){
+  ctx.fillStyle="#9bb7d5";ctx.fillRect(470,220,150,12);
+  ctx.fillRect(490,232,10,70);ctx.fillRect(590,232,10,70);
+  ctx.fillStyle="#fff";ctx.fillRect(515,190,45,30);
+  text("؟",537,212,22);
+  const x=phase<.6?170+phase*350:380;
+  stickman(x,280,now,phase>.55?"panic":"normal");
+  if(phase>.58)text("لم أدرس!",360,365,24,"#d94b4b");
+  else text("الامتحان اليوم؟",360,365,22);
+ }else if(scene==="football"){
+  ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.strokeRect(540,210,100,100);
+  ctx.beginPath();ctx.arc(590,260,35,0,7);ctx.stroke();
+  const x=100+phase*430;
+  stickman(x,280,now,phase>.6?"kick":"normal");
+  const bx=x+40+Math.sin(now*.01)*25;
+  ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(bx,298,12,0,7);ctx.fill();
+  ctx.strokeStyle="#17202d";ctx.lineWidth=2;ctx.stroke();
+  if(phase>.7)text("يا لها من تسديدة!",360,365,22,"#d94b4b");
+  else text("الهدف أمامه!",360,365,22);
+ }else if(scene==="chase"){
+  const x=100+phase*420;
+  stickman(x,280,now,"panic");
+  ctx.fillStyle="#b88752";ctx.fillRect(80,270,35,35);
+  ctx.strokeStyle="#6c4728";ctx.lineWidth=3;ctx.strokeRect(80,270,35,35);
+  if(phase>.5)text("أسرع! أسرع!",360,365,24,"#d94b4b");
+  else text("هناك شيء خلفي!",360,365,22);
+ }else{
+  const x=phase<.55?150+phase*300:315;
+  stickman(x,280,now,phase>.55?"panic":"normal");
+  if(phase>.42){
+   ctx.fillStyle="#f0a23a";ctx.fillRect(500,260,38,38);
+   ctx.strokeStyle="#8c5520";ctx.lineWidth=3;ctx.strokeRect(500,260,38,38);
+   text("!",x+35,190,35,"#d94b4b");
+  }
+  if(phase>.65)text("ماذا حدث للتو؟",360,365,22,"#d94b4b");
+  else text("كل شيء طبيعي...",360,365,22);
  }
 }
-function animate(now){
- if(running)draw(now-startTime);
- requestAnimationFrame(animate);
+function chooseScene(){
+ const s=idea.value.toLowerCase();
+ if(kind.value!=="auto")return kind.value;
+ if(s.includes("كرة")||s.includes("هدف")||s.includes("لاعب")||s.includes("football"))return "football";
+ if(s.includes("امتحان")||s.includes("طالب")||s.includes("مدرسة")||s.includes("دراسة"))return "exam";
+ if(s.includes("يهرب")||s.includes("مطاردة")||s.includes("يجري"))return "chase";
+ return ["exam","football","chase","fall"][Math.floor(Math.random()*4)];
 }
+document.getElementById("make").onclick=()=>{
+ scene=chooseScene();start=performance.now();
+ status.textContent="تم إعداد مشهد جديد: "+idea.value;
+};
+function animate(now){draw(now);requestAnimationFrame(animate)}
 requestAnimationFrame(animate);
 
-document.getElementById("make").onclick=()=>{
- startTime=performance.now();
- status.textContent="تم إنشاء المشهد! يمكنك معاينة الحركة.";
-};
 document.getElementById("record").onclick=()=>{
- if(!canvas.captureStream || !window.MediaRecorder){
-  status.textContent="تسجيل الفيديو غير مدعوم في هذا المتصفح.";
-  return;
+ if(!canvas.captureStream||!window.MediaRecorder){
+  status.textContent="التسجيل غير مدعوم في هذا المتصفح.";return;
  }
  try{
   chunks=[];
   const stream=canvas.captureStream(30);
-  let options={};
-  if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9"))
-   options.mimeType="video/webm;codecs=vp9";
-  else if(MediaRecorder.isTypeSupported("video/webm"))
-   options.mimeType="video/webm";
-  recorder=new MediaRecorder(stream,options);
+  recorder=new MediaRecorder(stream);
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
   recorder.onstop=()=>{
-   const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});
+   const blob=new Blob(chunks,{type:"video/webm"});
    const url=URL.createObjectURL(blob);
    const a=document.createElement("a");
-   a.href=url;a.download="stickman-funny-video.webm";
-   a.click();
-   status.textContent="انتهى التسجيل. تم تجهيز الفيديو للتنزيل.";
+   a.href=url;a.download="stickman-video.webm";a.click();
+   URL.revokeObjectURL(url);
+   status.textContent="انتهى التسجيل. إذا لم يبدأ التنزيل، تحقق من تنزيلات المتصفح.";
   };
   recorder.start();
   document.getElementById("record").disabled=true;
   document.getElementById("stop").disabled=false;
   status.textContent="التسجيل جارٍ. انتظر 10 ثوانٍ ثم اضغط إيقاف وحفظ.";
- }catch(e){status.textContent="تعذّر بدء التسجيل في هذا المتصفح."}
+ }catch(e){status.textContent="تعذر بدء التسجيل في هذا المتصفح."}
 };
 document.getElementById("stop").onclick=()=>{
  if(recorder&&recorder.state!=="inactive")recorder.stop();
@@ -160,4 +178,3 @@ document.getElementById("stop").onclick=()=>{
 </script>
 </body>
 </html>
-
