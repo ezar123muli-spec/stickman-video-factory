@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stickman Video Factory</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#f5f7fb;
+font-family:Arial,sans-serif;padding:20px}
+main{max-width:850px;margin:auto}
+h1{color:#70e1c1;text-align:center}
+p{line-height:1.8;color:#c8d3e5}
+.panel{background:#1d293b;padding:16px;border-radius:16px;
+margin:14px 0}
+canvas{display:block;width:100%;background:#fff;
+border-radius:12px}
+button{border:0;border-radius:10px;padding:13px 16px;
+margin:5px;font-weight:bold;cursor:pointer}
+.primary{background:#70e1c1;color:#102030}
+.secondary{background:#dce7f5;color:#172235}
+#status{color:#70e1c1}
+</style>
+</head>
+<body>
+<main>
+<h1>Stickman Video Factory</h1>
+<p style="text-align:center">مصنع المشاهد المضحكة — النسخة الأولى</p>
+
+<section class="panel">
+<label for="idea">فكرة المشهد</label>
+<p><input id="idea" value="الطالب الكسول والقدر"
+style="width:100%;padding:12px;border-radius:8px">
+</p>
+<button class="primary" id="make">إنشاء مشهد تلقائي</button>
+<button class="secondary" id="record">تسجيل الفيديو</button>
+<button class="secondary" id="stop" disabled>إيقاف وحفظ</button>
+<canvas id="scene" width="720" height="405"></canvas>
+<p id="status">جاهز لإنشاء أول مشهد.</p>
+</section>
+<p>هذه نسخة تجريبية تعمل داخل المتصفح، ولا تحتاج إلى مفتاح API.</p>
+</main>
+
+<script>
+const canvas=document.getElementById("scene");
+const ctx=canvas.getContext("2d");
+const status=document.getElementById("status");
+const idea=document.getElementById("idea");
+let startTime=performance.now();
+let running=true;
+let recorder=null, chunks=[];
+
+function line(x1,y1,x2,y2,width=7){
+ ctx.beginPath();
+ ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+ ctx.lineWidth=width;ctx.lineCap="round";
+ ctx.strokeStyle="#17202d";ctx.stroke();
+}
+function stickman(x,y,t,panic=false){
+ const swing=Math.sin(t*0.012)*20;
+ ctx.strokeStyle="#17202d";ctx.lineWidth=7;
+ ctx.lineCap="round";
+ // الرأس
+ ctx.beginPath();ctx.arc(x,y-65,17,0,Math.PI*2);ctx.stroke();
+ // الجسم
+ line(x,y-48,x,y+4);
+ // الذراعان
+ line(x,y-35,x-22+swing,y-12);
+ line(x,y-35,x+22-swing,y-15);
+ // الساقان
+ line(x,y+4,x-18+swing,y+38);
+ line(x,y+4,x+18-swing,y+38);
+ if(panic){
+  ctx.font="bold 28px Arial";ctx.fillStyle="#e74c3c";
+  ctx.fillText("!",x+22,y-82);
+ }
+}
+function draw(t){
+ const w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);
+ ctx.fillStyle="#eaf5ff";ctx.fillRect(0,0,w,h);
+ // الشمس والسحب
+ ctx.fillStyle="#ffd166";
+ ctx.beginPath();ctx.arc(625,65,30,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#fff";
+ [ [100,70],[280,95],[470,55] ].forEach(([x,y])=>{
+  ctx.beginPath();ctx.arc(x,y,17,0,Math.PI*2);
+  ctx.arc(x+20,y-8,23,0,Math.PI*2);
+  ctx.arc(x+42,y,16,0,Math.PI*2);ctx.fill();
+ });
+ // الأرض
+ ctx.fillStyle="#8ed6a2";ctx.fillRect(0,310,w,95);
+ ctx.fillStyle="#477f56";ctx.fillRect(0,310,w,7);
+ const phase=(t%12000)/12000;
+ const x=80+phase*550;
+ const panic=phase>.65;
+ stickman(x,270,t,panic);
+ // الحقيبة أو القدر
+ if(phase>.35){
+  const px=phase>.7?x-45:540;
+  ctx.fillStyle="#e7a23c";
+  ctx.fillRect(px-17,265,34,30);
+  ctx.strokeStyle="#8c5520";ctx.lineWidth=4;
+  ctx.strokeRect(px-17,265,34,30);
+  ctx.beginPath();ctx.arc(px,265,10,Math.PI,0);ctx.stroke();
+ }
+ // عنوان المشهد
+ ctx.fillStyle="#17202d";
+ ctx.textAlign="center";ctx.font="bold 25px Arial";
+ ctx.fillText(idea.value||"موقف مضحك",360,35);
+ if(phase>.7){
+  ctx.fillStyle="#e74c3c";ctx.font="bold 22px Arial";
+  ctx.fillText("أين حقيبتي؟!",360,365);
+ }
+}
+function animate(now){
+ if(running)draw(now-startTime);
+ requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+document.getElementById("make").onclick=()=>{
+ startTime=performance.now();
+ status.textContent="تم إنشاء المشهد! يمكنك معاينة الحركة.";
+};
+document.getElementById("record").onclick=()=>{
+ if(!canvas.captureStream || !window.MediaRecorder){
+  status.textContent="تسجيل الفيديو غير مدعوم في هذا المتصفح.";
+  return;
+ }
+ try{
+  chunks=[];
+  const stream=canvas.captureStream(30);
+  let options={};
+  if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9"))
+   options.mimeType="video/webm;codecs=vp9";
+  else if(MediaRecorder.isTypeSupported("video/webm"))
+   options.mimeType="video/webm";
+  recorder=new MediaRecorder(stream,options);
+  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  recorder.onstop=()=>{
+   const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement("a");
+   a.href=url;a.download="stickman-funny-video.webm";
+   a.click();
+   status.textContent="انتهى التسجيل. تم تجهيز الفيديو للتنزيل.";
+  };
+  recorder.start();
+  document.getElementById("record").disabled=true;
+  document.getElementById("stop").disabled=false;
+  status.textContent="التسجيل جارٍ. انتظر 10 ثوانٍ ثم اضغط إيقاف وحفظ.";
+ }catch(e){status.textContent="تعذّر بدء التسجيل في هذا المتصفح."}
+};
+document.getElementById("stop").onclick=()=>{
+ if(recorder&&recorder.state!=="inactive")recorder.stop();
+ document.getElementById("record").disabled=false;
+ document.getElementById("stop").disabled=true;
+};
+</script>
+</body>
+</html>
+
