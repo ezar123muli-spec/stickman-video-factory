@@ -3,265 +3,561 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>StickMotion Studio</title>
+
 <style>
-:root{--bg:#090d18;--panel:#111827;--panel2:#172135;--line:#27344a;--text:#edf3ff;--muted:#94a3b8;--blue:#7067ff;--cyan:#42d9ed}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:1px solid var(--line);border-radius:10px;background:#202c42;color:white;padding:10px 14px;transition:.2s}
-button:hover{border-color:var(--cyan);transform:translateY(-1px)}
-.primary{background:linear-gradient(120deg,#635bff,#328be9);border:0;font-weight:700}
-.app{max-width:1500px;margin:auto;padding:18px}
-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{height:44px;width:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#7568ff,#24cde5);font-size:24px}
-h1{font-size:20px;margin:0}
-.sub{font-size:12px;color:var(--muted);margin-top:4px}
-.status{color:#69e7b2;font-size:12px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.panelhead{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
-.panelhead strong{font-size:14px}
-.workspace{padding:14px}
-.preview{position:relative;background:#080b13;border:1px solid #27334b;border-radius:12px;overflow:hidden}
-canvas{width:100%;display:block;aspect-ratio:16/9}
-.previewtag{position:absolute;top:12px;left:12px;border-radius:7px;padding:5px 9px;background:#111827d9;font-size:11px;color:#b9c8df}
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
-.controls button{flex:1}
-.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
-.section{margin-top:16px}
-.sectiontitle{font-size:13px;font-weight:700;margin-bottom:10px}
-.scenes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-.scene{padding:0;text-align:right;overflow:hidden;background:var(--panel2)}
-.scene .thumb{height:68px;display:grid;place-items:center;font-size:31px;background:linear-gradient(135deg,#20294b,#142e3d)}
-.scene span{display:block;font-size:12px;padding:9px}
-.scene.active{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+body{
+ margin:0;background:#090d18;color:#f1f5ff;
+ font-family:Arial,Tahoma,sans-serif
+}
+header{
+ padding:20px;display:flex;justify-content:space-between;
+ align-items:center;gap:12px;flex-wrap:wrap;
+ border-bottom:1px solid #26324a;background:#101727
+}
+.logo{font-size:24px;color:#70e1ff;font-weight:bold}
+.tag{color:#9baac3;font-size:13px;margin-top:6px}
+main{max-width:1250px;margin:auto;padding:20px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px}
+.panel{background:#111a2b;border:1px solid #29364e;border-radius:15px;overflow:hidden;margin-bottom:18px}
+.heading{padding:16px;border-bottom:1px solid #29364e;font-weight:bold}
+.preview{padding:12px}
+canvas{display:block;width:100%;height:auto;background:#10182c;border-radius:10px}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button,select,input,textarea{font:inherit}
+button{
+ background:#202d45;color:white;border:1px solid #354561;
+ padding:11px 13px;border-radius:9px;cursor:pointer
+}
+button:hover{border-color:#58d9f0}
+.primary{background:#625bfa;border:0}
+.buttons button{flex:1}
 .side{padding:16px}
-.field{margin-bottom:15px}
-label{display:block;color:#b8c5da;font-size:12px;margin-bottom:7px}
-select,input[type=text],textarea{width:100%;color:var(--text);background:#0c1322;border:1px solid var(--line);border-radius:9px;padding:10px;outline:none}
-textarea{resize:vertical;min-height:92px;line-height:1.7}
-select:focus,textarea:focus,input:focus{border-color:var(--blue)}
-.row{display:flex;gap:9px}
-.row>*{min-width:0;flex:1}
-hr{border:0;border-top:1px solid var(--line);margin:17px 0}
-.check{display:flex;align-items:center;gap:9px;font-size:13px;margin:12px 0;color:#c6d1e2}
-.check input{accent-color:var(--blue)}
-.timeline{padding:14px 16px;border-top:1px solid var(--line);margin-top:16px}
-.track{height:44px;border-radius:8px;background:#0b1220;border:1px solid var(--line);position:relative;overflow:hidden}
-.clip{position:absolute;inset:4px 4px 4px 30%;border-radius:5px;background:linear-gradient(90deg,#6258e8,#2385b8);display:flex;align-items:center;padding:8px;font-size:12px}
-.notice{font-size:12px;line-height:1.8;color:var(--muted);margin-top:12px}
-footer{text-align:center;padding:24px 8px;color:#64748b;font-size:11px}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.side{order:2}.scenes{grid-template-columns:repeat(2,minmax(0,1fr))}.app{padding:10px}.panelhead{padding:12px}}
+label{display:block;font-size:13px;color:#b7c6dc;margin-bottom:7px}
+.field{margin-bottom:16px}
+select,input,textarea{
+ width:100%;padding:11px;color:white;background:#0a1221;
+ border:1px solid #34415a;border-radius:8px
+}
+textarea{min-height:100px;resize:vertical;line-height:1.7}
+.scenes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px}
+.scene{padding:0;overflow:hidden;text-align:center}
+.scene .picture{font-size:30px;padding:17px 5px;background:#1c2b44}
+.scene span{display:block;font-size:12px;padding:10px 3px}
+.scene.active{border:2px solid #7770ff}
+.small{color:#98a8c0;font-size:12px;line-height:1.8;padding:0 15px 15px}
+.status{font-size:12px;color:#68e4b3}
+@media(max-width:800px){
+ .layout{grid-template-columns:1fr}
+ main{padding:10px}
+ .scenes{grid-template-columns:repeat(2,1fr)}
+ header{padding:15px}
+}
 </style>
 </head>
+
 <body>
-<div class="app">
 <header>
- <div class="brand">
-  <div class="logo">✳</div>
-  <div><h1>StickMotion <span style="color:#8e85ff">Studio</span></h1>
-  <div class="sub" id="tagline">استوديو صناعة الرسوم المتحركة القصيرة</div></div>
+ <div>
+  <div class="logo">✦ StickMotion Studio</div>
+  <div class="tag">استوديو صناعة فيديوهات Stickman</div>
  </div>
- <div class="status">● <span id="status">الاستوديو جاهز</span></div>
+ <div class="status" id="status">الاستوديو جاهز</div>
 </header>
 
+<main>
 <div class="layout">
- <main>
-  <section class="panel">
-   <div class="panelhead"><strong id="previewTitle">معاينة الفيديو</strong><span class="time" id="clock">00:00 / 00:12</span></div>
-   <div class="workspace">
-    <div class="preview">
-     <canvas id="screen" width="960" height="540"></canvas>
-     <span class="previewtag">PREVIEW · 16:9</span>
-    </div>
-    <div class="controls">
-     <button class="primary" id="play">▶ تشغيل</button>
-     <button id="restart">↺ إعادة</button>
-     <button id="voice">🔊 قراءة النص</button>
-     <button id="record">● تسجيل الفيديو</button>
-    </div>
-    <div class="notice" id="recordInfo">يمكن تسجيل المشهد المتحرك وحفظه بصيغة WebM إذا كان المتصفح يدعم التسجيل.</div>
-   </div>
-   <div class="timeline">
-    <div class="sectiontitle" id="timelineTitle">المشهد الحالي · المسار الزمني</div>
-    <div class="track"><div class="clip" id="clip">المشهد الكوميدي الأول</div></div>
-   </div>
-  </section>
 
-  <section class="section">
-   <div class="sectiontitle" id="chooseScene">اختر مشهدًا</div>
-   <div class="scenes" id="scenes">
-    <button class="scene active" data-scene="exam"><div class="thumb">📚</div><span>مفاجأة الامتحان</span></button>
-    <button class="scene" data-scene="football"><div class="thumb">⚽</div><span>نجم كرة القدم</span></button>
-    <button class="scene" data-scene="chase"><div class="thumb">🏃</div><span>مطاردة مضحكة</span></button>
-    <button class="scene" data-scene="fall"><div class="thumb">💫</div><span>سقطة كوميدية</span></button>
+<section>
+ <div class="panel">
+  <div class="heading">معاينة الفيديو</div>
+  <div class="preview">
+   <canvas id="screen" width="960" height="540"></canvas>
+   <div class="buttons">
+    <button class="primary" id="play">Ⅱ إيقاف مؤقت</button>
+    <button id="restart">↻ إعادة المشهد</button>
+    <button id="voice">🔊 قراءة التعليق</button>
+    <button id="record">● تسجيل الفيديو</button>
    </div>
-  </section>
- </main>
+  </div>
+  <div class="small">
+   معاينة متحركة بنسبة 16:9. يمكنك تجربة المشاهد ثم تسجيل الفيديو بصيغة WebM إذا كان المتصفح يدعم ذلك.
+  </div>
+ </div>
 
- <aside class="panel">
-  <div class="panelhead"><strong id="settingsTitle">إعدادات المشروع</strong><span>⚙</span></div>
+ <div class="panel">
+  <div class="heading">اختر مشهدًا</div>
+  <div class="scenes">
+   <button class="scene active" data-scene="exam">
+    <div class="picture">📚</div><span>الامتحان</span>
+   </button>
+   <button class="scene" data-scene="football">
+    <div class="picture">⚽</div><span>كرة القدم</span>
+   </button>
+   <button class="scene" data-scene="chase">
+    <div class="picture">🏃</div><span>المطاردة</span>
+   </button>
+   <button class="scene" data-scene="dance">
+    <div class="picture">🕺</div><span>الرقصة</span>
+   </button>
+  </div>
+ </div>
+</section>
+
+<aside>
+ <div class="panel">
+  <div class="heading">إعدادات الفيديو</div>
   <div class="side">
    <div class="field">
-    <label id="langLabel">لغة الواجهة والتعليق</label>
+    <label for="language">اللغة</label>
     <select id="language">
      <option value="ar">العربية</option>
      <option value="tr">Türkçe</option>
      <option value="en">English</option>
     </select>
    </div>
+
    <div class="field">
-    <label id="titleLabel">عنوان الفيديو</label>
-    <input id="videoTitle" type="text" value="أغرب امتحان في العالم">
+    <label for="title">عنوان الفيديو</label>
+    <input id="title" value="أغرب امتحان في العالم">
    </div>
+
    <div class="field">
-    <label id="captionLabel">نص التعليق الصوتي</label>
-    <textarea id="caption">دخل الطالب الامتحان بثقة كبيرة... ثم اكتشف أنه نسي الدراسة كلها!</textarea>
+    <label for="caption">نص التعليق الصوتي والترجمة</label>
+    <textarea id="caption">دخل الطالب الامتحان بثقة كبيرة، ثم اكتشف أنه نسي الدراسة كلها!</textarea>
    </div>
-   <div class="row">
-    <div class="field">
-     <label id="durationLabel">المدة</label>
-     <select id="duration">
-      <option value="8">8 ثوانٍ</option>
-      <option value="12" selected>12 ثانية</option>
-      <option value="20">20 ثانية</option>
-     </select>
-    </div>
-    <div class="field">
-     <label id="speedLabel">سرعة الحركة</label>
-     <select id="speed">
-      <option value="0.65">بطيئة</option>
-      <option value="1" selected>عادية</option>
-      <option value="1.6">سريعة</option>
-     </select>
-    </div>
+
+   <div class="field">
+    <label for="duration">مدة التسجيل</label>
+    <select id="duration">
+     <option value="8">8 ثوانٍ</option>
+     <option value="12" selected>12 ثانية</option>
+     <option value="20">20 ثانية</option>
+    </select>
    </div>
-   <hr>
-   <div class="sectiontitle" id="audioTitle">الصوت والمؤثرات</div>
-   <label class="check"><input type="checkbox" id="subtitles" checked> <span id="subLabel">إظهار الترجمة على الفيديو</span></label>
-   <label class="check"><input type="checkbox" id="sound" checked> <span id="soundLabel">المؤثرات الصوتية</span></label>
-   <label class="check"><input type="checkbox" id="music"> <span id="musicLabel">نغمة خلفية بسيطة</span></label>
-   <button class="primary" id="apply" style="width:100%;margin-top:8px">✓ تطبيق الإعدادات</button>
-   <button id="download" style="width:100%;margin-top:9px">⬇ حفظ الفيديو</button>
-   <div class="notice" id="hint">هذه نسخة أولية تعمل داخل المتصفح. لا تستخدم نموذج ذكاء اصطناعي بعد، والأصوات تعتمد على إمكانات جهازك.</div>
+
+   <div class="field">
+    <label for="speed">سرعة الحركة</label>
+    <select id="speed">
+     <option value="0.6">بطيئة</option>
+     <option value="1" selected>عادية</option>
+     <option value="1.8">سريعة</option>
+    </select>
+   </div>
+
+   <label><input type="checkbox" id="subtitles" checked> إظهار الترجمة</label>
+   <br>
+   <label><input type="checkbox" id="sound" checked> مؤثر صوتي عند الاختيار</label>
+   <br><br>
+   <button class="primary" id="apply" style="width:100%">تطبيق الإعدادات</button>
+   <button id="save" style="width:100%;margin-top:9px">حفظ الفيديو</button>
   </div>
- </aside>
+  <div class="small">
+   هذه نسخة تعمل محليًا داخل المتصفح. توليد مشاهد جديدة بالذكاء الاصطناعي يحتاج إلى ربط خدمة ذكاء اصطناعي في مرحلة لاحقة.
+  </div>
+ </div>
+</aside>
+
 </div>
-<footer>StickMotion Studio · Creator Workspace · Version 2.0</footer>
-</div>
+</main>
 
 <script>
-const $=id=>document.getElementById(id);
-const canvas=$("screen"),ctx=canvas.getContext("2d");
-let scene="exam",playing=true,start=performance.now(),elapsed=0,raf=0,recorder=null,chunks=[],recordedURL=null,audioCtx=null,musicTimer=null;
-const copy={
-ar:{tagline:"استوديو صناعة الرسوم المتحركة القصيرة",preview:"معاينة الفيديو",play:"▶ تشغيل",pause:"Ⅱ إيقاف مؤقت",restart:"↺ إعادة",voice:"🔊 قراءة النص",record:"● تسجيل الفيديو",stop:"■ إيقاف التسجيل",recordInfo:"يمكن تسجيل المشهد المتحرك وحفظه بصيغة WebM إذا كان المتصفح يدعم التسجيل.",timeline:"المشهد الحالي · المسار الزمني",choose:"اختر مشهدًا",settings:"إعدادات المشروع",lang:"لغة الواجهة والتعليق",title:"عنوان الفيديو",caption:"نص التعليق الصوتي",duration:"المدة",speed:"سرعة الحركة",audio:"الصوت والمؤثرات",sub:"إظهار الترجمة على الفيديو",sound:"المؤثرات الصوتية",music:"نغمة خلفية بسيطة",apply:"✓ تطبيق الإعدادات",download:"⬇ حفظ الفيديو",hint:"هذه نسخة أولية تعمل داخل المتصفح. لا تستخدم نموذج ذكاء اصطناعي بعد، والأصوات تعتمد على إمكانات جهازك.",names:["مفاجأة الامتحان","نجم كرة القدم","مطاردة مضحكة","سقطة كوميدية"],titles:["أغرب امتحان في العالم","هدف القرن","مطاردة لا تنتهي","يوم سيئ للغاية"],captions:["دخل الطالب الامتحان بثقة كبيرة... ثم اكتشف أنه نسي الدراسة كلها!","استعد اللاعب لتسديد أقوى ضربة في حياته...","ظن أنه يستطيع الهرب بسرعة... لكن المفاجأة كانت أكبر!","بدأ اليوم بشكل طبيعي... ثم تحولت الأمور إلى فوضى!"],lines:["أين الإجابة؟!","يا له من هدف!","لن تمسكني!","لم يكن ذلك في الخطة!"],status:"الاستوديو جاهز"},
-tr:{tagline:"Kısa animasyon video stüdyosu",preview:"Video önizleme",play:"▶ Oynat",pause:"Ⅱ Duraklat",restart:"↺ Baştan",voice:"🔊 Metni seslendir",record:"● Video kaydet",stop:"■ Kaydı durdur",recordInfo:"Tarayıcı destekliyorsa animasyonu WebM videosu olarak kaydedebilirsin.",timeline:"Geçerli sahne · Zaman çizelgesi",choose:"Bir sahne seç",settings:"Proje ayarları",lang:"Arayüz ve ses dili",title:"Video başlığı",caption:"Seslendirme metni",duration:"Süre",speed:"Animasyon hızı",audio:"Ses ve efektler",sub:"Videoda altyazı göster",sound:"Ses efektleri",music:"Basit arka plan tonu",apply:"✓ Ayarları uygula",download:"⬇ Videoyu kaydet",hint:"Bu, tarayıcıda çalışan ilk sürümdür. Henüz yapay zekâ modeli kullanmaz; ses cihazına bağlıdır.",names:["Sınav sürprizi","Futbol yıldızı","Komik kovalamaca","Komik düşüş"],titles:["Dünyanın en garip sınavı","Yüzyılın golü","Bitmeyen kovalamaca","Kötü bir gün"],captions:["Öğrenci sınava büyük bir güvenle girdi... sonra hiç çalışmadığını fark etti!","Oyuncu hayatının en güçlü şutunu çekmeye hazırlandı...","Hızlıca kaçabileceğini sandı... ama büyük bir sürpriz vardı!","Gün normal başladı... sonra her şey karıştı!"],lines:["Cevap nerede?!","Ne gol ama!","Beni yakalayamazsın!","Bu planda yoktu!"],status:"Stüdyo hazır"},
-en:{tagline:"Short animation video studio",preview:"Video preview",play:"▶ Play",pause:"Ⅱ Pause",restart:"↺ Restart",voice:"🔊 Read text aloud",record:"● Record video",stop:"■ Stop recording",recordInfo:"Record the animation as a WebM video if your browser supports it.",timeline:"Current scene · Timeline",choose:"Choose a scene",settings:"Project settings",lang:"Interface and voice language",title:"Video title",caption:"Voice-over script",duration:"Duration",speed:"Animation speed",audio:"Audio and effects",sub:"Show subtitles on video",sound:"Sound effects",music:"Simple background tone",apply:"✓ Apply settings",download:"⬇ Save video",hint:"This is an initial browser-based version. It does not use an AI model yet; voice support depends on your device.",names:["Exam surprise","Football star","Funny chase","Comedic fall"],titles:["The strangest exam ever","Goal of the century","Endless chase","A very bad day"],captions:["The student entered the exam with confidence... then realized he had studied nothing!","The player prepared for the strongest kick of his life...","He thought he could escape quickly... but a surprise was waiting!","The day started normally... then everything went wrong!"],lines:["Where is the answer?!","What a goal!","You can't catch me!","That wasn't the plan!"],status:"Studio ready"}
+(function(){
+"use strict";
+
+var canvas=document.getElementById("screen");
+var ctx=canvas.getContext("2d");
+var status=document.getElementById("status");
+var playing=true;
+var scene="exam";
+var elapsed=0;
+var lastTime=0;
+var animation=0;
+var recorder=null;
+var chunks=[];
+var selectedVoice=null;
+
+var names={
+ ar:{
+  exam:"الامتحان",football:"كرة القدم",chase:"المطاردة",dance:"الرقصة",
+  titles:["أغرب امتحان في العالم","هدف القرن","مطاردة مضحكة","رقصة غير متوقعة"],
+  captions:[
+   "دخل الطالب الامتحان بثقة كبيرة، ثم اكتشف أنه نسي الدراسة كلها!",
+   "استعد اللاعب لتسجيل هدف تاريخي!",
+   "ظن أنه يستطيع الهرب بسرعة، لكن المفاجأة كانت أكبر!",
+   "بدأ بالرقص بهدوء ثم فقد السيطرة!"
+  ]
+ },
+ tr:{
+  exam:"Sınav",football:"Futbol",chase:"Kovalamaca",dance:"Dans",
+  titles:["En garip sınav","Yüzyılın golü","Komik kovalamaca","Beklenmedik dans"],
+  captions:[
+   "Öğrenci sınava güvenle girdi ama hiç çalışmadığını fark etti!",
+   "Oyuncu tarihi bir gol atmaya hazırlandı!",
+   "Hızlıca kaçabileceğini sandı ama büyük bir sürpriz vardı!",
+   "Sakin başladı, sonra dans çılgınlaştı!"
+  ]
+ },
+ en:{
+  exam:"Exam",football:"Football",chase:"Chase",dance:"Dance",
+  titles:["The Strangest Exam","Goal of the Century","Funny Chase","Unexpected Dance"],
+  captions:[
+   "The student entered confidently, then realized he had not studied!",
+   "The player prepared to score a historic goal!",
+   "He thought he could escape, but a big surprise was waiting!",
+   "The dance started calmly, then got out of control!"
+  ]
+ }
 };
-function tr(){return copy[$("language").value]||copy.ar}
-function titleText(){return $("videoTitle").value||tr().titles[["exam","football","chase","fall"].indexOf(scene)]}
-function drawStick(x,y,s=1,pose=0,color="#eaf3ff"){
- ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle=color;ctx.lineWidth=7;
- ctx.beginPath();ctx.arc(0,-65,19,0,Math.PI*2);ctx.fillStyle="#f1c7a5";ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=5;ctx.stroke();
- ctx.strokeStyle=color;ctx.lineWidth=8;
- ctx.beginPath();ctx.moveTo(0,-45);ctx.lineTo(0,20);ctx.stroke();
- ctx.beginPath();ctx.moveTo(0,-30);ctx.lineTo(-26+Math.sin(pose)*9,-3);ctx.moveTo(0,-30);ctx.lineTo(25+Math.cos(pose)*9,-12);ctx.stroke();
- ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(-20+Math.sin(pose)*22,55);ctx.moveTo(0,20);ctx.lineTo(21-Math.sin(pose)*22,55);ctx.stroke();
- ctx.fillStyle="#172033";ctx.beginPath();ctx.arc(-6,-68,2.5,0,7);ctx.arc(6,-68,2.5,0,7);ctx.fill();
- ctx.restore()
+
+function currentLanguage(){
+ return names[document.getElementById("language").value]||names.ar;
 }
-function roundRect(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill()}
-function draw(t){
- const W=960,H=540,p=t*(+$("speed").value),sky=ctx.createLinearGradient(0,0,0,H);
- sky.addColorStop(0,"#101b35");sky.addColorStop(1,"#263a55");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
- ctx.fillStyle="#a2c7e8";for(let i=0;i<45;i++){let x=(i*173)%W,y=(i*71)%250;ctx.globalAlpha=.2+(i%4)*.13;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;
- // Background hills and floor
- ctx.fillStyle="#172e42";ctx.beginPath();ctx.moveTo(0,350);ctx.quadraticCurveTo(250,260,490,355);ctx.quadraticCurveTo(750,245,960,335);ctx.lineTo(960,540);ctx.lineTo(0,540);ctx.fill();
- ctx.fillStyle="#243d48";ctx.fillRect(0,425,W,115);
- for(let i=0;i<12;i++){ctx.fillStyle="#35525a";ctx.fillRect(i*90,438,48,4)}
- let x=480,y=405,pose=Math.sin(p*4),a=0;
+function setStatus(text){status.textContent=text;}
+
+function line(x1,y1,x2,y2,color,width){
+ ctx.beginPath();
+ ctx.moveTo(x1,y1);
+ ctx.lineTo(x2,y2);
+ ctx.strokeStyle=color;
+ ctx.lineWidth=width;
+ ctx.lineCap="round";
+ ctx.stroke();
+}
+
+function stick(x,y,scale,phase,color){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(scale,scale);
+ ctx.strokeStyle=color||"#f3f6ff";
+ ctx.lineWidth=8;
+ ctx.lineCap="round";
+
+ // Head
+ ctx.beginPath();
+ ctx.arc(0,-65,19,0,Math.PI*2);
+ ctx.fillStyle="#f0c7a5";
+ ctx.fill();
+ ctx.stroke();
+
+ // Eyes
+ ctx.fillStyle="#1a2438";
+ ctx.beginPath();
+ ctx.arc(-6,-68,2.5,0,Math.PI*2);
+ ctx.arc(6,-68,2.5,0,Math.PI*2);
+ ctx.fill();
+
+ // Body
+ line(0,-45,0,15,color||"#f3f6ff",8);
+
+ // Arms
+ line(0,-30,-26+Math.sin(phase)*14,-7,color||"#f3f6ff",8);
+ line(0,-30,26+Math.cos(phase)*14,-7,color||"#f3f6ff",8);
+
+ // Legs
+ line(0,15,-20+Math.sin(phase)*20,52,color||"#f3f6ff",8);
+ line(0,15,20-Math.sin(phase)*20,52,color||"#f3f6ff",8);
+
+ ctx.restore();
+}
+
+function roundedBox(x,y,w,h,r,color){
+ ctx.beginPath();
+ ctx.moveTo(x+r,y);
+ ctx.lineTo(x+w-r,y);
+ ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+ ctx.lineTo(x+w,y+h-r);
+ ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+ ctx.lineTo(x+r,y+h);
+ ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+ ctx.lineTo(x,y+r);
+ ctx.quadraticCurveTo(x,y,x+r,y);
+ ctx.closePath();
+ ctx.fillStyle=color;
+ ctx.fill();
+}
+
+function background(){
+ var gradient=ctx.createLinearGradient(0,0,0,540);
+ gradient.addColorStop(0,"#111d3b");
+ gradient.addColorStop(1,"#284457");
+ ctx.fillStyle=gradient;
+ ctx.fillRect(0,0,960,540);
+
+ // Stars / lights
+ for(var i=0;i<35;i++){
+  ctx.fillStyle="rgba(220,235,255,"+(0.15+(i%3)*0.1)+")";
+  ctx.fillRect((i*173)%960,(i*67)%240,3,3);
+ }
+
+ // Ground
+ ctx.fillStyle="#203a43";
+ ctx.fillRect(0,425,960,115);
+ ctx.fillStyle="#31545a";
+ for(var j=0;j<12;j++){
+  ctx.fillRect(j*90,440,45,4);
+ }
+}
+
+function draw(){
+ background();
+
+ var phase=elapsed*4*Number(document.getElementById("speed").value);
+ var x=480;
+ var y=400;
+
  if(scene==="exam"){
-  roundRect(300,300,360,115,12,"#b8794c");roundRect(322,314,316,12,5,"#e7bd8e");
-  ctx.fillStyle="#e9e4d7";ctx.fillRect(400,278,155,22);ctx.fillStyle="#475569";ctx.fillRect(414,284,90,3);ctx.fillRect(414,291,120,3);
-  x=480+Math.sin(p*1.4)*6;y=302+Math.sin(p*3)*3;
-  drawStick(x,y,1.15,pose);
-  ctx.fillStyle="#ffdc68";ctx.font="bold 26px system-ui";ctx.textAlign="center";ctx.fillText("?!",x+60,y-76+Math.sin(p*5)*7);
-  ctx.fillStyle="#0d1628";ctx.fillRect(0,0,W,80);
-  ctx.fillStyle="#edf3ff";ctx.font="bold 26px system-ui";ctx.fillText(titleText(),W/2,48);
+  roundedBox(300,300,360,115,8,"#b77b50");
+  roundedBox(335,270,290,35,4,"#e8e4d8");
+  ctx.fillStyle="#35425a";
+  ctx.fillRect(365,280,110,4);
+  ctx.fillRect(365,289,180,4);
+
+  stick(475+Math.sin(phase)*5,305,1.12,Math.sin(phase));
+  ctx.fillStyle="#ffdc6b";
+  ctx.font="bold 30px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("?!",550,225+Math.sin(phase*2)*8);
  }else if(scene==="football"){
-  ctx.strokeStyle="#6c9b8a";ctx.lineWidth=3;ctx.strokeRect(70,70,820,350);ctx.beginPath();ctx.arc(480,245,70,0,7);ctx.stroke();
-  ctx.strokeRect(70,170,140,160);ctx.strokeRect(750,170,140,160);
-  x=250+(p*100%450);y=405;drawStick(x,y,1.1,pose);
-  let bx=x+65+Math.sin(p*4)*45,by=410-Math.abs(Math.sin(p*4))*55;
-  ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(bx,by,18,0,7);ctx.fill();ctx.strokeStyle="#182235";ctx.lineWidth=3;ctx.stroke();
-  ctx.fillStyle="#edf3ff";ctx.font="bold 25px system-ui";ctx.textAlign="center";ctx.fillText(titleText(),480,50);
+  ctx.strokeStyle="#75a89a";
+  ctx.lineWidth=4;
+  ctx.strokeRect(65,65,830,350);
+  ctx.beginPath();
+  ctx.arc(480,240,65,0,Math.PI*2);
+  ctx.stroke();
+
+  x=260+(elapsed*100%420);
+  stick(x,400,1.1,Math.sin(phase));
+
+  ctx.beginPath();
+  ctx.arc(x+65,400-Math.abs(Math.sin(phase))*55,18,0,Math.PI*2);
+  ctx.fillStyle="#fff";
+  ctx.fill();
+  ctx.strokeStyle="#202b40";
+  ctx.lineWidth=3;
+  ctx.stroke();
  }else if(scene==="chase"){
-  let run=(p*95)%650;x=140+run;y=405;drawStick(x,y,1.05,pose);
-  drawStick(820-run*.45,407,.92,-pose,"#ff8f98");
-  ctx.fillStyle="#ffe08a";ctx.font="bold 28px system-ui";ctx.textAlign="center";ctx.fillText("!!!",x+40,280+Math.sin(p*8)*10);
-  for(let i=0;i<5;i++){ctx.globalAlpha=.5;ctx.fillStyle="#8da7c5";ctx.beginPath();ctx.arc(x-35-i*15,380+i%2*14,4+i%3,0,7);ctx.fill()}ctx.globalAlpha=1;
- }else{
-  x=480+Math.sin(p*2)*130;y=405+Math.abs(Math.sin(p*3))*15;
-  ctx.save();ctx.translate(x,y-35);ctx.rotate(Math.sin(p*3)*.85);drawStick(0,0,.98,pose);ctx.restore();
-  ctx.fillStyle="#ffd36b";ctx.font="bold 28px system-ui";ctx.textAlign="center";ctx.fillText("✦  ✧  ✦",x,245+Math.sin(p*4)*8);
-  ctx.fillStyle="#edf3ff";ctx.font="bold 25px system-ui";ctx.fillText(titleText(),480,50);
+  x=150+(elapsed*100%600);
+  stick(x,400,1.05,Math.sin(phase));
+  stick(800-(elapsed*60%350),405,0.9,-Math.sin(phase),"#ff9aa8");
+
+  ctx.fillStyle="#ffdb76";
+  ctx.font="bold 30px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("!!!",x+35,285);
+ }else if(scene==="dance"){
+  ctx.save();
+  ctx.translate(480,350);
+  ctx.rotate(Math.sin(phase)*0.25);
+  stick(0,0,1.2,phase);
+  ctx.restore();
+
+  ctx.fillStyle="#b2a9ff";
+  ctx.font="bold 32px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("♪  ♫  ♪",480,230+Math.sin(phase)*10);
  }
- if($("subtitles").checked){
-  const text=$("caption").value.trim()||tr().lines[["exam","football","chase","fall"].indexOf(scene)];
-  roundRect(70,452,820,60,12,"#050914dd");
-  ctx.fillStyle="#fff";ctx.font="bold 21px system-ui";ctx.textAlign="center";
-  let s=text;if(s.length>76)s=s.slice(0,73)+"…";ctx.fillText(s,480,489);
+
+ // Video title
+ ctx.fillStyle="rgba(7,12,25,.82)";
+ ctx.fillRect(0,0,960,68);
+ ctx.fillStyle="#fff";
+ ctx.font="bold 27px Arial";
+ ctx.textAlign="center";
+ ctx.fillText(document.getElementById("title").value||"StickMotion",480,43);
+
+ // Subtitles
+ if(document.getElementById("subtitles").checked){
+  var text=document.getElementById("caption").value;
+  roundedBox(55,460,850,55,9,"rgba(5,9,20,.9)");
+  ctx.fillStyle="#fff";
+  ctx.font="bold 20px Arial";
+  ctx.textAlign="center";
+  if(text.length>78)text=text.substring(0,75)+"...";
+  ctx.fillText(text,480,494);
  }
 }
-function frame(now){if(playing)elapsed=(now-start)/1000;draw(elapsed);let dur=+$("duration").value;$("clock").textContent=`00:${String(Math.floor(elapsed)).padStart(2,"0")} / 00:${String(dur).padStart(2,"0")}`;raf=requestAnimationFrame(frame)}
-function setStatus(s){$("status").textContent=s}
-function chooseScene(s){
- scene=s;elapsed=0;start=performance.now();
- document.querySelectorAll(".scene").forEach(b=>b.classList.toggle("active",b.dataset.scene===s));
- const i=["exam","football","chase","fall"].indexOf(s);
- $("videoTitle").value=tr().titles[i];$("caption").value=tr().captions[i];$("clip").textContent=tr().names[i];draw(elapsed)
+
+function tick(time){
+ if(!lastTime)lastTime=time;
+ if(playing){
+  elapsed+=(time-lastTime)/1000;
+  var duration=Number(document.getElementById("duration").value);
+  if(elapsed>=duration)elapsed=0;
+ }
+ lastTime=time;
+ draw();
+ animation=requestAnimationFrame(tick);
 }
-function applyLanguage(){
- const c=tr(),lang=$("language").value;
- document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
- const ids={tagline:"tagline",previewTitle:"preview",play:playing?"pause":"play",restart:"restart",voice:"voice",record:recorder?"stop":"record",recordInfo:"recordInfo",timelineTitle:"timeline",chooseScene:"choose",settingsTitle:"settings",langLabel:"lang",titleLabel:"title",captionLabel:"caption",durationLabel:"duration",speedLabel:"speed",audioTitle:"audio",subLabel:"sub",soundLabel:"sound",musicLabel:"music",apply:"apply",download:"download",hint:"hint"};
- for(const [id,key] of Object.entries(ids))if($(id))$(id).textContent=c[key];
- document.querySelectorAll(".scene").forEach((b,i)=>{b.querySelector("span").textContent=c.names[i]});
- if(!recorder){$("record").textContent=c.record}
- chooseScene(scene);
+
+function chooseScene(newScene){
+ scene=newScene;
+ elapsed=0;
+ var lang=currentLanguage();
+ var keys=["exam","football","chase","dance"];
+ var index=keys.indexOf(scene);
+ document.querySelectorAll(".scene").forEach(function(button){
+  button.classList.toggle("active",button.getAttribute("data-scene")===scene);
+ });
+ document.getElementById("title").value=lang.titles[index];
+ document.getElementById("caption").value=lang.captions[index];
+
+ if(document.getElementById("sound").checked){
+  try{
+   var AC=window.AudioContext||window.webkitAudioContext;
+   if(AC){
+    var ac=new AC();
+    var oscillator=ac.createOscillator();
+    var gain=ac.createGain();
+    oscillator.frequency.value=520;
+    gain.gain.value=.035;
+    oscillator.connect(gain);
+    gain.connect(ac.destination);
+    oscillator.start();
+    oscillator.stop(ac.currentTime+.12);
+    oscillator.onended=function(){ac.close();};
+   }
+  }catch(e){}
+ }
+ draw();
 }
-$("language").addEventListener("change",applyLanguage);
-document.querySelectorAll(".scene").forEach(b=>b.onclick=()=>chooseScene(b.dataset.scene));
-$("play").onclick=()=>{playing=!playing;if(playing)start=performance.now()-elapsed*1000;$("play").textContent=playing?tr().pause:tr().play;setStatus(playing?tr().status:"Paused")};
-$("restart").onclick=()=>{elapsed=0;start=performance.now();playing=true;$("play").textContent=tr().pause;draw(0)};
-$("apply").onclick=()=>{draw(elapsed);setStatus(tr().status)};
-$("voice").onclick=()=>{
- if(!("speechSynthesis" in window)){setStatus("الصوت غير مدعوم في هذا المتصفح");return}
- speechSynthesis.cancel();let u=new SpeechSynthesisUtterance($("caption").value);
- u.lang={ar:"ar-SA",tr:"tr-TR",en:"en-US"}[$("language").value];u.rate=1;speechSynthesis.speak(u)
-};
-function beep(freq=440,duration=.12){
- try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;g.gain.value=.04;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.stop(audioCtx.currentTime+duration)}catch(e){}
-}
-$("sound").addEventListener("change",()=>{if($("sound").checked)beep(660)});
-$("music").addEventListener("change",()=>{
- if(musicTimer){clearInterval(musicTimer);musicTimer=null}
- if($("music").checked){beep(330,.3);musicTimer=setInterval(()=>{if($("music").checked&&playing)beep([330,392,440,392][Math.floor(elapsed*2)%4],.25)},650)}
+
+document.querySelectorAll(".scene").forEach(function(button){
+ button.addEventListener("click",function(){
+  chooseScene(button.getAttribute("data-scene"));
+ });
 });
-function startRecording(){
- if(!canvas.captureStream||!window.MediaRecorder){setStatus("التسجيل غير مدعوم؛ جرّب متصفحًا أحدث.");return}
+
+document.getElementById("play").addEventListener("click",function(){
+ playing=!playing;
+ this.textContent=playing?"Ⅱ إيقاف مؤقت":"▶ تشغيل";
+ lastTime=performance.now();
+ setStatus(playing?"المعاينة تعمل":"المعاينة متوقفة مؤقتًا");
+});
+
+document.getElementById("restart").addEventListener("click",function(){
+ elapsed=0;
+ playing=true;
+ lastTime=performance.now();
+ document.getElementById("play").textContent="Ⅱ إيقاف مؤقت";
+ draw();
+});
+
+document.getElementById("apply").addEventListener("click",function(){
+ draw();
+ setStatus("تم تطبيق الإعدادات");
+});
+
+document.getElementById("language").addEventListener("change",function(){
+ var lang=currentLanguage();
+ var keys=["exam","football","chase","dance"];
+ var index=keys.indexOf(scene);
+ document.getElementById("title").value=lang.titles[index];
+ document.getElementById("caption").value=lang.captions[index];
+
+ document.querySelectorAll(".scene span").forEach(function(span,i){
+  span.textContent=lang[keys[i]];
+ });
+ document.documentElement.lang=this.value;
+ document.documentElement.dir=this.value==="ar"?"rtl":"ltr";
+ draw();
+});
+
+document.getElementById("voice").addEventListener("click",function(){
+ if(!window.speechSynthesis){
+  setStatus("التعليق الصوتي غير مدعوم في هذا المتصفح");
+  return;
+ }
+ window.speechSynthesis.cancel();
+ var utterance=new SpeechSynthesisUtterance(document.getElementById("caption").value);
+ var lang=document.getElementById("language").value;
+ utterance.lang=lang==="ar"?"ar-SA":lang==="tr"?"tr-TR":"en-US";
+ window.speechSynthesis.speak(utterance);
+});
+
+document.getElementById("caption").addEventListener("input",draw);
+document.getElementById("title").addEventListener("input",draw);
+document.getElementById("subtitles").addEventListener("change",draw);
+
+function recordVideo(){
+ if(!canvas.captureStream||!window.MediaRecorder){
+  setStatus("التسجيل غير مدعوم في هذا المتصفح");
+  return;
+ }
+
  try{
-  const stream=canvas.captureStream(30);
-  const mime=MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9":"video/webm";
-  recorder=new MediaRecorder(stream,{mimeType:mime});chunks=[];
-  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
-  recorder.onstop=()=>{
-   const blob=new Blob(chunks,{type:"video/webm"});
-   if(recordedURL)URL.revokeObjectURL(recordedURL);
-   recordedURL=URL.createObjectURL(blob);
-   const a=document.createElement("a");a.href=recordedURL;a.download="stickmotion-video.webm";a.click();
-   recorder=null;$("record").textContent=tr().record;setStatus("تم تجهي
+  var stream=canvas.captureStream(30);
+  var type=MediaRecorder.isTypeSupported("video/webm;codecs=vp8")
+   ?"video/webm;codecs=vp8":"video/webm";
+
+  recorder=new MediaRecorder(stream,{mimeType:type});
+  chunks=[];
+  recorder.ondataavailable=function(event){
+   if(event.data&&event.data.size>0)chunks.push(event.data);
+  };
+  recorder.onstop=function(){
+   var blob=new Blob(chunks,{type:"video/webm"});
+   var url=URL.createObjectURL(blob);
+   var link=document.createElement("a");
+   link.href=url;
+   link.download="stickmotion-video.webm";
+   document.body.appendChild(link);
+   link.click();
+   link.remove();
+   setTimeout(function(){URL.revokeObjectURL(url);},10000);
+   setStatus("تم حفظ الفيديو");
+   document.getElementById("record").textContent="● تسجيل الفيديو";
+   recorder=null;
+  };
+
+  elapsed=0;
+  playing=true;
+  lastTime=performance.now();
+  recorder.start();
+  document.getElementById("record").textContent="■ إيقاف التسجيل";
+  setStatus("جارٍ تسجيل الفيديو...");
+
+  setTimeout(function(){
+   if(recorder&&recorder.state==="recording")recorder.stop();
+  },Number(document.getElementById("duration").value)*1000);
+ }catch(error){
+  setStatus("تعذر التسجيل. جرّب متصفحًا أحدث.");
+ }
+}
+
+document.getElementById("record").addEventListener("click",function(){
+ if(recorder&&recorder.state==="recording"){
+  recorder.stop();
+ }else{
+  recordVideo();
+ }
+});
+
+document.getElementById("save").addEventListener("click",function(){
+ if(recorder&&recorder.state==="recording"){
+  recorder.stop();
+ }else{
+  recordVideo();
+ }
+});
+
+// Start the animation and report rendering errors.
+try{
+ chooseScene("exam");
+ draw();
+ animation=requestAnimationFrame(tick);
+}catch(error){
+ setStatus("خطأ في العرض: "+error.message);
+ ctx.fillStyle="#10182c";
+ ctx.fillRect(0,0,960,540);
+ ctx.fillStyle="#fff";
+ ctx.font="24px Arial";
+ ctx.textAlign="center";
+ ctx.fillText("حدث خطأ في عرض المشهد",480,250);
+}
+})();
+</script>
+</body>
+</html>
